@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="de-CH">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Geburtstagsparadoxon – selbst entdecken</title>
+<style>
+/* ===== DESIGN: Farben hier anpassen ===== */
+:root{--A:#1F5FA8;--B:#B85410;--G:#2E7D32;--bg:#F1F5FA;--ink:#1B2430;--line:#D5DEE9}
+*{box-sizing:border-box}
+body{margin:0;font:18px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--ink)}
+#app{max-width:860px;margin:0 auto;padding:14px}
+header{display:flex;justify-content:space-between;align-items:center;gap:10px}
+h1{font-size:1.25rem;margin:.2em 0;color:var(--A)}
+h2{margin:.2em 0 .3em;font-size:1.35rem}
+h3{margin:1em 0 .3em}
+.stars{background:#fff;border:2px solid var(--line);border-radius:999px;padding:4px 14px;font-weight:700}
+.bar{height:12px;background:#dfe7f1;border-radius:99px;overflow:hidden;margin-top:6px}
+.bar i{display:block;height:100%;background:var(--G);transition:width .5s}
+.lbl{font-size:.85rem;margin:4px 0 10px}
+.card{background:#fff;border-radius:20px;padding:18px;box-shadow:0 2px 10px #1f5fa81f}
+.lead{font-size:1.1rem;margin:.2em 0 .8em}
+.note{font-size:.9rem;color:#475569}
+.room{background:#fff;border:3px dashed var(--line);border-radius:20px;padding:8px 12px 10px;margin:0 0 12px}
+.rl{font-size:.85rem;font-weight:700;color:#475569;margin-bottom:4px}
+.rp{display:flex;flex-wrap:wrap;gap:8px;min-height:44px}
+.av{font-size:2rem;text-align:center;line-height:1}.av small{display:block;font-size:.7rem}
+.av.enter{animation:pop .6s}
+@keyframes pop{from{transform:translateX(60px) scale(.3);opacity:0}to{transform:none;opacity:1}}
+.fr{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 .15em;line-height:1.25}
+.fr>span:first-child{border-bottom:2px solid currentColor;padding:0 .3em}
+.fr>span:last-child{padding:0 .3em}
+.dot{margin:0 .2em}
+.eq{display:block;margin:.4em 0;font-size:1.15rem;overflow-x:auto}
+.eqi{display:inline-block;margin:.3em .4em;font-size:1.15rem}
+input.num,select{font:inherit;font-weight:700;border:3px solid var(--line);border-radius:12px;padding:6px 8px;width:5.2em;text-align:center;background:#fff;color:var(--ink)}
+select{width:auto;min-width:4.5em}
+input.good,select.good{border-color:var(--G);background:#E8F5E9}
+input.bad,select.bad{border-color:var(--B);background:#FFF1E6}
+.br{border-left:8px solid var(--B);background:#FFF1E6;border-radius:12px;padding:8px 12px;margin:8px 0;transition:all .6s}
+.br.A{border-color:var(--A);background:#E8F0FA}
+.br.lit{background:var(--B);color:#fff}.br.A.lit{background:var(--A)}
+.calc{display:inline-block;background:#1B2430;color:#fff;border-radius:10px;padding:6px 14px;margin:6px 0;font-family:ui-monospace,Menlo,monospace}
+.rule{background:#F1F5FA;border-left:6px solid var(--A);border-radius:10px;padding:6px 12px;margin:8px 0;font-size:.95rem}
+.row{overflow-x:auto;white-space:nowrap;padding:6px 0;border-bottom:1px solid var(--line)}
+.blue{color:var(--A)}.orange{color:var(--B)}
+.formula{border:3px solid var(--G);border-radius:16px;padding:10px 14px;margin:10px 0;background:#F1F8F1;overflow-x:auto;animation:pop .7s}
+.btns{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px;justify-content:flex-end}
+.btn{font:inherit;font-weight:700;border:0;border-radius:999px;padding:12px 24px;min-height:48px;cursor:pointer;color:#fff}
+.btn.pri{background:var(--A)}.btn.chk{background:var(--G)}.btn.hint{background:#fff;color:var(--A);border:3px solid var(--A)}
+.btn:disabled{background:#d9e0ea;color:#4b5563;border-color:#d9e0ea;cursor:not-allowed}
+.btn:focus-visible,input:focus-visible,select:focus-visible{outline:4px solid #F2B705;outline-offset:2px}
+.fb{min-height:1.6em;font-weight:700;margin-top:8px}.fb.good{color:var(--G)}.fb.bad{color:var(--B)}
+#hint p{background:#FFF9DB;border-radius:10px;padding:6px 12px;margin:6px 0}
+.big{font-size:1.2rem}
+.big2{font-size:1.2rem;margin:10px 0}.big2 b{font-size:2rem}
+.ctl{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.ctl input[type=number]{font:inherit;font-weight:700;width:6em;padding:8px;border:3px solid var(--A);border-radius:12px}
+.ctl input[type=range]{flex:1;min-width:160px;accent-color:var(--A);height:32px}
+.cal{display:grid;grid-template-columns:repeat(auto-fill,minmax(12px,1fr));gap:4px;margin:8px 0}
+.d{aspect-ratio:1;border-radius:50%;background:var(--line)}
+.d.o{background:var(--A)}.d.m{background:var(--B);transform:scale(1.5)}
+.lg{display:inline-block;width:12px;height:12px;border-radius:50%;vertical-align:middle;margin:0 4px 0 10px}
+.start{text-align:center;padding:10px 0}
+.start .em{font-size:3rem}
+.cf{position:fixed;top:-14px;width:10px;height:14px;z-index:9;pointer-events:none;animation:fall 1.5s ease-in forwards}
+@keyframes fall{to{transform:translateY(105vh) rotate(540deg)}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+/* ===== RECHENKERN (nicht hartkodiert) ===== */
+const N=365;
+const pAll=n=>{let p=1;for(let i=0;i<n;i++)p*=(N-i)/N;return p;};   // P(alle verschieden)
+const pPair=n=>1-pAll(n);                                            // P(mindestens zwei gleiche)
+const pc=n=>Math.round(pAll(n)*1000)/10;                             // in %, 1 Nachkommastelle
+const f1=x=>(Math.round(x*10)/10).toFixed(1);
+const num=v=>parseFloat(String(v).replace(',','.').replace(/[%\s]/g,''));
+const $=id=>document.getElementById(id);
+const fr=(a,b)=>`<span class="fr"><span>${a}</span><span>${b}</span></span>`;
+const prod=n=>Array.from({length:n},(_,i)=>fr(N-i,N)).join('<span class="dot">·</span>');
+const calc=n=>`<div class="calc">🧮 Rechner: <b>${pAll(n).toFixed(5)}</b></div>`;
+/* Beschriftung vor jedem Produkt: sagt klar, welche Wahrscheinlichkeit gemeint ist */
+const pa=n=>`<b class="blue">P(alle ${n} verschieden)</b> =`;
+const RULE='<div class="rule"><b>Pfadregel:</b> «Alle verschieden» heisst: Person 1 hat einen neuen Tag <u>und</u> Person 2 hat einen neuen Tag <u>und</u> … Darum multiplizieren wir die Wahrscheinlichkeiten entlang des Pfades.</div>';
+const OPT_N=[['','?'],['n','n'],['n-1','n − 1'],['n+1','n + 1'],['365','365']];
+const PCT=`<input class="num" id="f_p" inputmode="decimal" autocomplete="off" aria-label="Prozent"> %`;
+
+/* ===== TEXTE DER STUFEN 1–5 (hier leicht anpassbar) =====
+   §id§ = Eingabefeld. h = Hinweise (max. 2), wrong = Rückmeldung bei Fehler, ok = bei Erfolg */
+const STAGES={
+1:{title:'Stufe 1 · Person 1',people:1,intro:'Person 1 betritt das Klassenzimmer. Sonst ist noch niemand da.',tasks:[{
+  q:`<p>Wie gross ist die Wahrscheinlichkeit, dass Person 1 an einem <b>anderen Tag</b> Geburtstag hat als alle bisherigen?</p>
+   <div class="eq"><b>P(Person 1 hat einen neuen Geburtstag)</b> = ${fr('§a§',365)}</div>`,
+  f:[{id:'a',t:'num',ans:365,tol:0}],
+  h:['Wie viele Personen sind schon im Klassenzimmer?','Niemand ist da, also ist kein Tag besetzt. Wie viele der 365 Tage passen für Person 1?'],
+  wrong:'Fast! Überlege nochmals: Wie viele Tage sind schon besetzt?',
+  ok:'Genau: 365/365 = 1. Person 1 hat sicher einen «neuen» Geburtstag.'}]},
+2:{title:'Stufe 2 · Person 2',people:2,intro:'Person 2 kommt ins Klassenzimmer. Jetzt gibt es zwei Pfade.',tasks:[{
+  q:`<p>Person 2 hat entweder denselben Geburtstag wie Person 1 oder einen anderen. Trage die Wahrscheinlichkeit für jeden Pfad ein:</p>
+   <div class="br B">👯 <b>P(Person 2 hat denselben Geburtstag wie Person 1)</b> = <span class="eqi">${fr('§s§',365)}</span></div>
+   <div class="br A">🙂 <b>P(Person 2 hat einen anderen Geburtstag)</b> = <span class="eqi">${fr('§d§',365)}</span></div>`,
+  f:[{id:'s',t:'num',ans:1,tol:0},{id:'d',t:'num',ans:364,tol:0}],
+  h:['Person 1 besetzt genau einen Tag. Wie viele der 365 Tage sind «derselbe wie Person 1»?','Alle übrigen Tage sind «anders»: 365 − 1 = ?'],
+  wrong:'Fast! Überlege nochmals: Wie viele Tage sind schon besetzt?',ok:'Super! Die beiden Pfade ergeben zusammen 365/365 = 1.'},
+ {q:`<p>Wie gross ist die Wahrscheinlichkeit, dass in der Klasse (Person 1 und 2) <b class="blue">alle verschiedene Geburtstage</b> haben?</p>${RULE}
+   <div class="eq">${pa(2)} ${prod(2)}</div>${calc(2)}<p>Gib das Ergebnis in Prozent an (eine Nachkommastelle): ${PCT}</p>`,
+  f:[{id:'p',t:'num',ans:pc(2),tol:.06}],h:['Rechne den Wert des Rechners mal 100.','Runde auf eine Nachkommastelle.'],
+  wrong:'Fast! Nimm den Wert vom Rechner, rechne mal 100 und runde.',ok:'Richtig!'}]},
+3:{title:'Stufe 3 · Person 3',people:3,intro:'Person 3 hat nur dann einen «neuen» Geburtstag, wenn sie keinen der bereits besetzten Tage trifft.',tasks:[{
+  q:`<p>Zwei Tage sind schon besetzt (von Person 1 und 2, sie haben verschiedene Geburtstage).</p>
+   <div class="eq"><b>P(Person 3 hat einen neuen Geburtstag)</b> = ${fr('§a§',365)}</div>`,
+  f:[{id:'a',t:'num',ans:363,tol:0}],h:['Wie viele Tage sind besetzt?','365 − 2 = ?'],
+  wrong:'Fast! Überlege nochmals: Wie viele Tage sind schon besetzt?',ok:'Genau: 363 Tage sind noch frei.'},
+ {q:`<p>Wie gross ist die Wahrscheinlichkeit, dass bei 3 Personen <b class="blue">alle verschiedene Geburtstage</b> haben?</p>
+   <div class="eq">${pa(3)} ${prod(3)}</div>${calc(3)}<p>Tippe das Ergebnis in Prozent ein: ${PCT}</p>`,
+  f:[{id:'p',t:'num',ans:pc(3),tol:.06}],h:['Wert des Rechners mal 100.','Auf eine Nachkommastelle runden.'],
+  wrong:'Fast! Rechner-Wert mal 100, dann runden.',ok:'Richtig! Die Wahrscheinlichkeit sinkt langsam.'}]},
+4:{title:'Stufe 4 · Person 4 und 5',people:5,intro:'Jetzt bist du dran: Ergänze die Brüche selbst.',tasks:[{
+  q:`<p>Wie gross ist die Wahrscheinlichkeit, dass der neue Mensch jeweils einen <b>noch freien</b> Tag trifft?</p>
+   <div class="eq"><b>P(Person 4 hat einen neuen Geburtstag)</b> = ${fr('§p4§',365)}</div>
+   <div class="eq"><b>P(Person 5 hat einen neuen Geburtstag)</b> = ${fr('§p5§',365)}</div>`,
+  f:[{id:'p4',t:'num',ans:362,tol:0},{id:'p5',t:'num',ans:361,tol:0}],
+  h:['Bei Person 4 sind schon 3 Tage besetzt, bei Person 5 sind es 4.','Frei sind 365 − 3 und 365 − 4.'],
+  wrong:'Fast! Überlege nochmals: Wie viele Tage sind schon besetzt?',ok:'Stark! Du erkennst schon das Muster.'},
+ {q:`<p>Wie gross ist die Wahrscheinlichkeit, dass bei 5 Personen <b class="blue">alle verschiedene Geburtstage</b> haben?</p>
+   <div class="eq">${pa(5)} ${prod(5)}</div>${calc(5)}<p>Ergebnis in Prozent: ${PCT}</p>`,
+  f:[{id:'p',t:'num',ans:pc(5),tol:.06}],h:['Rechner-Wert mal 100.','Auf eine Nachkommastelle runden.'],
+  wrong:'Fast! Rechner-Wert mal 100, dann runden.',ok:'Richtig!'}]},
+5:{title:'Stufe 5 · Das Muster',people:5,intro:'Das sind die bisherigen Wahrscheinlichkeiten, dass in der Klasse <b class="blue">alle verschiedene Geburtstage</b> haben:',
+  extra:()=>[2,3,4,5].map(n=>`<div class="row">${pa(n)} ${prod(n)} <b class="blue">= ${pc(n)} %</b></div>`).join(''),
+ tasks:[{
+  q:`<p>Schau dir die Zähler an. Von Faktor zu Faktor wird der Zähler um <select id="f_a" aria-label="Auswahl"><option value="">?</option><option value="1">1</option><option value="2">2</option><option value="365">365</option></select> kleiner.</p>`,
+  f:[{id:'a',t:'sel',ans:'1'}],h:['Vergleiche 365, 364, 363, 362 …','Jede neue Person hat einen besetzten Tag mehr.'],
+  wrong:'Fast! Schau auf die Zähler: 365, 364, 363 …',ok:'Genau, immer um 1.'},
+ {q:`<p>Jetzt für eine Klasse mit <b>n</b> Personen. Wähle den fehlenden Wert im letzten Faktor:</p>
+   <div class="eq blue">P(alle n verschieden) = ${fr(365,365)}·${fr(364,365)}·…·${fr('365 − (<select id="f_b" aria-label="Auswahl">'+OPT_N.map(o=>`<option value="${o[0]}">${o[1]}</option>`).join('')+'</select>)',365)}</div>`,
+  f:[{id:'b',t:'sel',ans:'n-1'}],h:['Bei Person 3 steht 365 − 2, bei Person 4 steht 365 − 3.','Der Wert in der Klammer ist immer um 1 kleiner als die Personenzahl.'],
+  wrong:'Fast! Bei Person 3 steht 365 − 2. Was gehört zu Person n?',ok:'Super: 365 − (n − 1).'},
+ {q:`<p>Jetzt die Gegenwahrscheinlichkeit. Das Gegenereignis zu «alle verschieden» ist «mindestens zwei haben am selben Tag Geburtstag»:</p>
+   <div class="eq orange">P(mindestens zwei gleiche) = <select id="f_c" aria-label="Auswahl"><option value="">?</option><option value="0">0</option><option value="1">1</option><option value="365">365</option></select> − P(alle verschieden)</div>`,
+  f:[{id:'c',t:'sel',ans:'1'}],h:['Es gilt P(A) = 1 − P(Ā).','Alle Wahrscheinlichkeiten zusammen ergeben …?'],
+  wrong:'Fast! Denk an die Regel P(A) = 1 − P(Ā).',ok:'Du hast die Formel selbst entdeckt! 🎉',
+  reveal:`<div class="formula"><b class="blue">P(alle n verschieden) = ${fr(365,365)}·${fr(364,365)}·…·${fr('365 − (n − 1)',365)}</b><br><b class="orange">P(mindestens zwei gleiche) = 1 − P(alle n verschieden)</b></div>`}]}
+};
+const MAX=Object.values(STAGES).reduce((a,s)=>a+s.tasks.length*3,0);
+
+/* ===== ZUSTAND ===== */
+const fresh=()=>({step:0,task:0,stars:0,n:25,wrong:0,hints:0,solved:false,rolled:false,counts:null,runs:0,pairs:0});
+let S=fresh();
+const AV=['🧑','👩','👨','🧒','👧','👦','🧓','👱'];
+const room=c=>c?`<div class="room"><div class="rl">🏫 Klassenzimmer</div><div class="rp" aria-hidden="true">${Array.from({length:c},(_,i)=>`<span class="av ${i===c-1?'enter':''}">${AV[i%8]}<small>${i+1}</small></span>`).join('')}</div></div>`:'';
+
+/* ===== DARSTELLUNG ===== */
+function render(){
+  const s=S.step,eng=!!STAGES[s];let main='',ppl=0,nxOn=false,nxLbl='Weiter →';
+  if(s===0){ /* STARTSEITE: Text hier anpassen */
+    main=`<div class="start"><div class="em">🎂🏫🎲</div><h2>Das Geburtstagsparadoxon</h2>
+    <p class="lead">Mit dieser Simulation findest du heraus, wie wahrscheinlich es ist, dass in <b>eurer Klasse</b> mindestens zwei Personen am gleichen Tag Geburtstag haben.</p>
+    <p class="note">Du entdeckst den Rechenweg Schritt für Schritt selbst. Du brauchst nur die Gegenwahrscheinlichkeit und die Pfadregel.</p></div>`;
+    nxLbl="Los geht's →";nxOn=true;
+  }else if(eng){const st=STAGES[s],t=st.tasks[S.task];ppl=st.people;
+    nxOn=S.solved;if(S.task<st.tasks.length-1)nxLbl='Nächste Frage →';
+    const q=t.q.replace(/§(\w+)§/g,(m,id)=>`<input class="num" id="f_${id}" inputmode="decimal" autocomplete="off" aria-label="Eingabe" onkeydown="if(event.key==='Enter')check()">`);
+    main=`<h2>${st.title}</h2><p class="lead">${st.intro}</p>${st.extra?st.extra():''}<div class="task">${q}</div>
+    <div id="hint"></div><div id="fb" class="fb" role="status" aria-live="polite"></div><div id="rev"></div>`;
+  }else if(s===6){nxOn=S.rolled;
+    main=`<h2>Stufe 6 · Deine Klasse</h2><p class="lead">Wie viele Personen sind in deiner Klasse?</p>
+    <div class="ctl"><input id="n" type="number" min="1" max="365" value="${S.n}" inputmode="numeric" aria-label="Anzahl Personen" oninput="setN(this.value,0)">
+    <input id="ns" type="range" min="1" max="60" value="${Math.min(S.n,60)}" aria-label="Regler Anzahl Personen" oninput="setN(this.value,1)"></div>
+    <div id="nerr" class="fb bad" role="alert"></div>
+    <div class="big2"><span class="blue"><b>P(alle verschieden)</b> = <span id="pa"></span></span><br>
+    <span class="orange"><b>P(mindestens zwei gleiche)</b> = 1 − P(alle verschieden) = <b id="pb"></b></span></div>
+    <div id="curve"></div>
+    
+    <h3>Simulation: zufällige Geburtstage deiner Klasse</h3>
+   
+<div class="rule">
+  <b>So liest du die Simulation:</b>
+  Eine Wahrscheinlichkeit von
+  <b class="orange" id="pe"></b>
+  bedeutet: Testet man 100 Klassen, ist zu erwarten,
+  dass in ungefähr
+  <b id="pd"></b>
+  Klassen mindestens zwei Personen am selben Tag
+  Geburtstag haben.
+  Die tatsächliche Anzahl kann aufgrund des Zufalls
+  davon abweichen.
+</div>
+
+ <p class="note">Jeder Punkt ist ein Tag des Jahres (365 Punkte).</p>
+    <div><span class="lg" style="background:var(--line)"></span>frei<span class="lg" style="background:var(--A)"></span>ein Geburtstag<span class="lg" style="background:var(--B)"></span>mehrere am selben Tag</div>
+    <div id="cal" class="cal" aria-hidden="true"></div><div id="sim" class="fb" role="status" aria-live="polite"></div>
+    <div class="btns" style="justify-content:flex-start"><button class="btn chk" onclick="roll(1)">🎲 1 Durchgang</button><button class="btn hint" onclick="roll(20)">20 Durchläufe</button></div>
+    <div id="tally" class="big"></div>`;
+  }
+  const hintBtn=eng?`<button class="btn hint" id="hb" onclick="hint()">💡 Hinweis (${STAGES[s].tasks[S.task].h.length-S.hints} übrig)</button><button class="btn chk" id="cb" onclick="check()">Prüfen</button>`:'';
+  const nav=s===6?`<button class="btn pri" onclick="S=fresh();render()">Nochmals von vorne</button>`:`${hintBtn}<button class="btn pri" id="nx" onclick="next()" ${nxOn?'':'disabled'}>${nxLbl}</button>`;
+  $('app').innerHTML=`<header><h1>🎂 Geburtstagsparadoxon</h1>${s?`<div class="stars">⭐ ${S.stars} / ${MAX}</div>`:''}</header>
+  ${s?`<div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="6" aria-valuenow="${s}"><i style="width:${Math.round(s/6*100)}%"></i></div><div class="lbl">Stufe ${s} von 6</div>`:''}
+  ${room(ppl)}<div class="card">${main}<div class="btns">${nav}</div></div>`;
+  if(s===6)upd();
+  const f=document.querySelector('input.num,select');if(f&&eng)f.focus();
+  window.scrollTo(0,0);
+}
+function fb(m,c){$('fb').textContent=m;$('fb').className='fb '+c;}
+function hint(){const t=STAGES[S.step].tasks[S.task];if(S.hints>=t.h.length)return;
+  $('hint').insertAdjacentHTML('beforeend',`<p>💡 ${t.h[S.hints]}</p>`);S.hints++;
+  const left=t.h.length-S.hints;$('hb').textContent=`💡 Hinweis (${left} übrig)`;if(!left)$('hb').disabled=true;}
+function check(){
+  if(S.solved)return;const st=STAGES[S.step],t=st.tasks[S.task];let ok=true,empty=false;
+  t.f.forEach(f=>{const el=$('f_'+f.id),v=el.value.trim();if(!v){empty=true;return;}
+    const good=f.t==='sel'?v===f.ans:Math.abs(num(v)-f.ans)<=f.tol;
+    el.classList.toggle('good',good);el.classList.toggle('bad',!good);if(!good)ok=false;});
+  if(empty){fb('Trage zuerst alle Felder aus.','bad');return;}
+  if(!ok){S.wrong++;fb(t.wrong,'bad');return;}
+  const gain=Math.max(1,3-S.wrong-S.hints);S.stars+=gain;S.solved=true;
+  t.f.forEach(f=>$('f_'+f.id).disabled=true);
+  fb(`${t.ok}  +${gain} ⭐`,'good');if(t.reveal)$('rev').innerHTML=t.reveal;
+  document.querySelectorAll('.br').forEach(e=>e.classList.add('lit'));
+  $('nx').disabled=false;$('cb').disabled=true;$('hb').disabled=true;
+  document.querySelector('.stars').textContent=`⭐ ${S.stars} / ${MAX}`;
+  if(S.task===st.tasks.length-1)confetti();
+}
+function next(){const st=STAGES[S.step];
+  if(st&&S.task<st.tasks.length-1)S.task++;else{S.step++;S.task=0;}
+  S.wrong=0;S.hints=0;S.solved=false;render();}
+function confetti(){if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  const c=['#1F5FA8','#B85410','#2E7D32','#F2B705'];
+  for(let i=0;i<28;i++){const e=document.createElement('i');e.className='cf';
+    e.style.cssText=`left:${Math.random()*100}vw;background:${c[i%4]};animation-delay:${Math.random()*.3}s`;
+    document.body.appendChild(e);setTimeout(()=>e.remove(),1900);}}
+
+/* ===== STUFE 6: EIGENE KLASSE ===== */
+function setN(v,fromSlider){const n=parseInt(v,10);
+  if(!(n>=1&&n<=365)){$('nerr').textContent='Gib eine ganze Zahl von 1 bis 365 ein.';return;}
+  $('nerr').textContent='';S.n=n;S.counts=null;S.runs=0;S.pairs=0;
+  if(fromSlider)$('n').value=n;else $('ns').value=Math.min(n,60);upd();}
+function roll(k){for(let r=0;r<k;r++){const c=new Uint16Array(N);for(let i=0;i<S.n;i++)c[Math.floor(Math.random()*N)]++;
+    S.counts=c;S.runs++;if(c.some(x=>x>1))S.pairs++;}
+  S.rolled=true;upd();}
+function upd(){
+  const pp=pPair(S.n);
+  $('pa').textContent=f1(pAll(S.n)*100)+' %';$('pb').textContent=f1(pp*100)+' %';
+  /* Erklärsatz zur Simulation: passt sich der Klassengrösse an */
+  $('pe').textContent=f1(pp*100)+' %';$('pd').textContent=Math.round(pp*100);
+  $('cal').innerHTML=Array.from({length:N},(_,i)=>{const c=S.counts?S.counts[i]:0;return `<i class="d ${c>1?'m':c===1?'o':''}"></i>`;}).join('');
+  const m=S.counts?S.counts.filter(x=>x>1).length:0;
+  $('sim').textContent=S.counts?(m>0?`🎉 Mindestens ein Paar: ${m} Tag(e) mit mehreren Geburtstagen.`:'Diesmal hatten alle verschiedene Geburtstage.'):'Drücke «1 Durchgang».';
+  $('tally').innerHTML=S.runs?`In <b class="orange">${S.pairs}</b> von <b>${S.runs}</b> Durchläufen gab es ein Paar, das sind <b>${f1(S.pairs/S.runs*100)} %</b>.<br>Erwartet wären ${S.runs} · ${pp.toFixed(3)} ≈ <b>${f1(pp*S.runs)}</b> Durchläufe. Je mehr Durchläufe, desto näher kommt der Anteil an ${f1(pp*100)} %.`:'';
+  $('curve').innerHTML=curve();}
+function curve(){
+  const W=600,H=260,l=46,r=14,t=14,b=38,pw=W-l-r,ph=H-t-b,X=n=>l+(n-1)/59*pw,Y=p=>t+(1-p)*ph;
+  let d='';for(let n=1;n<=60;n++)d+=(n>1?'L':'M')+X(n).toFixed(1)+' '+Y(pPair(n)).toFixed(1);
+  let n50=1;while(pPair(n50)<.5)n50++;const nn=Math.min(S.n,60);
+  const xt=[10,20,30,40,50,60].map(n=>`<text x="${X(n)}" y="${H-16}" text-anchor="middle" font-size="15">${n}</text>`).join('');
+  const yt=[0,.5,1].map(p=>`<text x="${l-6}" y="${Y(p)+5}" text-anchor="end" font-size="15">${p*100} %</text>`).join('');
+  return `<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="Kurve von P(mindestens zwei gleiche) für 1 bis 60 Personen. Die 50-Prozent-Marke wird bei n = ${n50} überschritten.">
+  <rect x="${l}" y="${t}" width="${pw}" height="${ph}" fill="#fff" stroke="#D5DEE9"/>
+  <line x1="${l}" x2="${W-r}" y1="${Y(.5)}" y2="${Y(.5)}" stroke="#1B2430" stroke-dasharray="6 5"/>
+  <path d="${d}" fill="none" stroke="#B85410" stroke-width="4"/>
+  <line x1="${X(nn)}" x2="${X(nn)}" y1="${t}" y2="${t+ph}" stroke="#1F5FA8" stroke-width="2" stroke-dasharray="4 4"/>
+  <circle cx="${X(nn)}" cy="${Y(pPair(nn))}" r="7" fill="#1F5FA8" stroke="#fff" stroke-width="2"/>
+  <circle cx="${X(n50)}" cy="${Y(pPair(n50))}" r="5" fill="#2E7D32"/>
+  <text x="${X(n50)+10}" y="${Y(.5)+24}" font-size="15" fill="#2E7D32" font-weight="700">ab n = ${n50} über 50 %</text>
+  ${xt}${yt}<text x="${l+pw/2}" y="${H-1}" text-anchor="middle" font-size="14">Anzahl Personen n</text></svg>`;}
+
+render();
+</script>
+</body>
+</html>
